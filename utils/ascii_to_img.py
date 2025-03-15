@@ -31,7 +31,12 @@ def save_ascii_as_png(
         color=background_color,
     )
     I1 = ImageDraw.Draw(img)
-    monospace_font = ImageFont.truetype("consola.ttf", FONT_SIZE)
+
+    try:
+        monospace_font = ImageFont.truetype("consola.ttf", FONT_SIZE)
+    except IOError:
+        monospace_font = ImageFont.truetype("LiberationMono-Regular.ttf", FONT_SIZE)
+    
     for y_idx, line in enumerate(ascii_str):
         I1.text(
             xy=(X_MARGIN, y_idx * int(FONT_SIZE * 1.2) + Y_MARGIN),
