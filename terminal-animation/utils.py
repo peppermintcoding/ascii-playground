@@ -130,6 +130,36 @@ class Colors:
     GRAY_23 = Color(255)
 
 
+GRAYSCALE = [
+    Colors.BLACK,
+    Colors.GRAY_00,
+    Colors.GRAY_01,
+    Colors.GRAY_02,
+    Colors.GRAY_03,
+    Colors.GRAY_04,
+    Colors.GRAY_05,
+    Colors.GRAY_06,
+    Colors.GRAY_07,
+    Colors.GRAY_08,
+    Colors.GRAY_09,
+    Colors.GRAY_10,
+    Colors.GRAY_11,
+    Colors.GRAY_12,
+    Colors.GRAY_13,
+    Colors.GRAY_14,
+    Colors.GRAY_15,
+    Colors.GRAY_16,
+    Colors.GRAY_17,
+    Colors.GRAY_18,
+    Colors.GRAY_19,
+    Colors.GRAY_20,
+    Colors.GRAY_21,
+    Colors.GRAY_22,
+    Colors.GRAY_23,
+    Colors.WHITE,
+]
+
+
 def aprint(s: str):
     """advanced print: write and flush"""
     sys.stdout.write(s)

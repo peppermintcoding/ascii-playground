@@ -3,10 +3,10 @@ import random
 
 from tinygrad.nn.datasets import mnist
 
-from utils import SpecialChars, true_color_str
+from utils import GRAYSCALE, Ansi, SpecialChars, true_color_str
 
 
-def show_mnist_grid(rows: int, cols: int):
+def show_mnist_grid(rows: int, cols: int, true_color: bool):
     X_train, Y_train, _, _ = mnist()
 
     for _ in range(rows):
@@ -27,18 +27,33 @@ def show_mnist_grid(rows: int, cols: int):
                 for x in range(img.shape[1]):
                     fg_value = img[y, x]
                     bg_value = img[y + 1, x]
-                    print(
-                        true_color_str(
-                            s=SpecialChars.UPPER_HALF_BLOCK,
-                            r=fg_value,
-                            g=fg_value,
-                            b=fg_value,
-                            bg_r=bg_value,
-                            bg_g=bg_value,
-                            bg_b=bg_value,
-                        ),
-                        end="",
-                    )
+                    if true_color:
+                        print(
+                            true_color_str(
+                                s=SpecialChars.UPPER_HALF_BLOCK,
+                                r=fg_value,
+                                g=fg_value,
+                                b=fg_value,
+                                bg_r=bg_value,
+                                bg_g=bg_value,
+                                bg_b=bg_value,
+                            ),
+                            end="",
+                        )
+                    else:
+                        fg_color = GRAYSCALE[
+                            int(fg_value / 255 * (len(GRAYSCALE) - 1))
+                        ].fg
+                        bg_color = GRAYSCALE[
+                            int(bg_value / 255 * (len(GRAYSCALE) - 1))
+                        ].bg
+                        print(
+                            fg_color
+                            + bg_color
+                            + SpecialChars.UPPER_HALF_BLOCK
+                            + Ansi.COLOR_RESET,
+                            end="",
+                        )
                 print(SpecialChars.DOUBLE_VERTICAL_BAR, end="")
             print()
     print((cols * 29 + 1) * SpecialChars.DOUBLE_HORIZONTAL_BAR)
@@ -50,5 +65,6 @@ if __name__ == "__main__":
     )
     parser.add_argument("-r", type=int, help="number rows used", default=3)
     parser.add_argument("-c", type=int, help="number of columns used", default=4)
+    parser.add_argument("-tc", type=bool, help="use true color", default=False)
     args = parser.parse_args()
-    show_mnist_grid(rows=args.r, cols=args.c)
+    show_mnist_grid(rows=args.r, cols=args.c, true_color=args.tc)
