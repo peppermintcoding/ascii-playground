@@ -5,5 +5,8 @@ description = "ascii tools"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "noise>=1.2.2",
     "numpy>=2.2.3",
+    "opensimplex>=0.4.5.1",
+    "tinygrad>=0.10.2",
 ]

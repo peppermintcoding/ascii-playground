@@ -136,9 +136,12 @@ def aprint(s: str):
     sys.stdout.flush()
 
 
-def true_color_str(s: str, red: int, green: int, blue: int):
-    """full rgb but is super slow, tends to flicker"""
-    return f"\x1b[38;2;{red};{green};{blue}m{s}\x1b[0m"
+def true_color_str(s: str, r: int, g: int, b: int, bg_r: int = None, bg_g: int = None, bg_b: int = None):
+    fg_color = f"\x1b[38;2;{r};{g};{b}m"
+    if bg_r is not None and bg_g is not None and bg_b is not None:
+        bg_color = f"\x1b[48;2;{bg_r};{bg_g};{bg_b}m"
+        return f"{bg_color}{fg_color}{s}\x1b[0m"
+    return f"{fg_color}{s}\x1b[0m"
 
 
 def get_terminal_size() -> tuple[int, int]:
