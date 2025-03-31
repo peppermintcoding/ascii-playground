@@ -16,7 +16,7 @@ FONT_SIZE = 16
 def save_ascii_as_png(
     ascii_str_path: str,
     output_filename: str,
-    background_color: tuple[int] = (24, 25, 41),
+    bg_color: tuple[int] = (24, 25, 41),
     font_color: tuple[int] = (255, 255, 255),
 ):
     with open(ascii_str_path, "r") as file:
@@ -28,7 +28,7 @@ def save_ascii_as_png(
     img = Image.new(
         mode="RGB",
         size=(ascii_xy[0] * int(FONT_SIZE / 1.6), ascii_xy[1] * int(FONT_SIZE * 1.4)),
-        color=background_color,
+        color=bg_color,
     )
     I1 = ImageDraw.Draw(img)
 

@@ -25,17 +25,17 @@ def show_mnist_grid(rows: int, cols: int):
             for index in indices:
                 img = X_train[index].squeeze().numpy()
                 for x in range(img.shape[1]):
-                    foreground_value = img[y, x]
-                    background_value = img[y + 1, x]
+                    fg_value = img[y, x]
+                    bg_value = img[y + 1, x]
                     print(
                         true_color_str(
                             s=SpecialChars.UPPER_HALF_BLOCK,
-                            r=foreground_value,
-                            g=foreground_value,
-                            b=foreground_value,
-                            bg_r=background_value,
-                            bg_g=background_value,
-                            bg_b=background_value,
+                            r=fg_value,
+                            g=fg_value,
+                            b=fg_value,
+                            bg_r=bg_value,
+                            bg_g=bg_value,
+                            bg_b=bg_value,
                         ),
                         end="",
                     )

@@ -48,7 +48,7 @@ class Seagrass:
         self.height = height
         self.left = "(" if left is None else left
         self.right = ")" if right is None else right
-        self.c = Colors.GREEN_I.foreground if c is None else c
+        self.c = Colors.GREEN_I.fg if c is None else c
 
     def draw(self, canvas: list[str], cols: int, rows: int, frame: int) -> list[str]:
         if frame % 15 == 0:
@@ -152,12 +152,12 @@ if __name__ == "__main__":
         ]
 
         school = [
-            Fish(x=2, y=0, direction=1, c=Colors.RED.foreground),
-            Fish(x=12, y=2, direction=1, c=Colors.PURPLE_I.foreground),
-            Fish(x=64, y=3, direction=-1, c=Colors.YELLOW.foreground),
-            Fish(x=24, y=5, direction=-1, c=Colors.WHITE.foreground),
-            Fish(x=29, y=8, direction=1, c=Colors.LIGHT_BLUE_I.foreground),
-            Fish(x=19, y=10, direction=-1, c=Colors.GREEN_I.foreground),
+            Fish(x=2, y=0, direction=1, c=Colors.RED.fg),
+            Fish(x=12, y=2, direction=1, c=Colors.PURPLE_I.fg),
+            Fish(x=64, y=3, direction=-1, c=Colors.YELLOW.fg),
+            Fish(x=24, y=5, direction=-1, c=Colors.WHITE.fg),
+            Fish(x=29, y=8, direction=1, c=Colors.LIGHT_BLUE_I.fg),
+            Fish(x=19, y=10, direction=-1, c=Colors.GREEN_I.fg),
         ]
 
         bubbles = [

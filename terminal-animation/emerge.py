@@ -45,7 +45,7 @@ def render(cols: int, rows: int, frame: int) -> str:
                 _ = char_choices[i].pop()
 
     return (
-        Ansi.BOLD + Colors.GREEN_I.foreground + "".join(frame_output) + Ansi.COLOR_RESET
+        Ansi.BOLD + Colors.GREEN_I.fg + "".join(frame_output) + Ansi.COLOR_RESET
     )
 
 

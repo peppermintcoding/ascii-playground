@@ -75,11 +75,11 @@ class Color:
     code: int
 
     @property
-    def foreground(self):
+    def fg(self):
         return f"\033[38;5;{self.code}m"
 
     @property
-    def background(self):
+    def bg(self):
         return f"\033[48;5;{self.code}m"
 
 
@@ -175,7 +175,7 @@ def animation_loop(
             time.sleep(wait_between_frames - frame_time)
         if show_fps:
             actual_fps = 1.0 / (time.time() - frame_start)
-            fps_info = Colors.RED_I.foreground + f"\nFPS: {actual_fps:.2f}" + Ansi.COLOR_RESET
+            fps_info = Colors.RED_I.fg + f"\nFPS: {actual_fps:.2f}" + Ansi.COLOR_RESET
         else:
             fps_info = ""
 

@@ -15,8 +15,8 @@ def reset_terminal():
 
 
 GRADIENT = np.array(list(" ,;~=>§#%"))
-FG_COLOR = Colors.GREEN_I.foreground
-BG_COLOR = Colors.BLACK.background
+FG_COLOR = Colors.GREEN_I.fg
+BG_COLOR = Colors.BLACK.bg
 
 
 def render(cols: int, rows: int, frame: int) -> str:
