@@ -52,7 +52,9 @@ def visualize(step: int, max_steps: int, acc: float):
         Layout(name="header", size=3),
         Layout(name="main", ratio=1),
     )
-    layout["main"].split_column(Layout(name="example_0"), Layout(name="example_1"), Layout(name="example_2"))
+    layout["main"].split_column(
+        Layout(name="example_0"), Layout(name="example_1"), Layout(name="example_2")
+    )
 
     for idx in range(3):
         layout["main"][f"example_{idx}"].split_row(
@@ -76,11 +78,31 @@ def visualize(step: int, max_steps: int, acc: float):
         header_content = Columns([left_text, Align.right(right_text)], expand=True)
 
         layout["header"].update(Panel(header_content, style="white on black"))
-
-        layout["main"][f"example_{idx}"]["digit"].update(Panel(Text.from_ansi(mnist_digit), title="MNIST digit"))
-        layout["main"][f"example_{idx}"]["layer01"].update(Panel(Text.from_ansi(layer01), title="layer 01: 32x32"))
-        layout["main"][f"example_{idx}"]["layer02"].update(Panel(Text.from_ansi(layer02), title="layer 02: 16x16"))
-        layout["main"][f"example_{idx}"]["last_layer"].update(Panel(Text.from_ansi(last_layer), title="last layer"))
+        
+        layout["main"][f"example_{idx}"]["digit"].update(
+            Panel(
+                Align.center(Text.from_ansi(mnist_digit), vertical="middle"),
+                title="MNIST digit",
+            )
+        )
+        layout["main"][f"example_{idx}"]["layer01"].update(
+            Panel(
+                Align.center(Text.from_ansi(layer01), vertical="middle"),
+                title="layer 01: 32x32",
+            )
+        )
+        layout["main"][f"example_{idx}"]["layer02"].update(
+            Panel(
+                Align.center(Text.from_ansi(layer02), vertical="middle"),
+                title="layer 02: 16x16",
+            )
+        )
+        layout["main"][f"example_{idx}"]["last_layer"].update(
+            Panel(
+                Align.center(Text.from_ansi(last_layer), vertical="middle"),
+                title="last layer",
+            )
+        )
 
     return layout
 
@@ -106,12 +128,16 @@ def visualize_layer(dim: int, weights: np.ndarray, idx: int) -> str:
             bg_value = img[x + (y + 1) * dim] + min_value
             fg_color = GRAYSCALE[int(fg_value / max_value * (len(GRAYSCALE) - 1))].fg
             bg_color = GRAYSCALE[int(bg_value / max_value * (len(GRAYSCALE) - 1))].bg
-            fmt_str.append(fg_color + bg_color + SpecialChars.UPPER_HALF_BLOCK + Ansi.COLOR_RESET)
+            fmt_str.append(
+                fg_color + bg_color + SpecialChars.UPPER_HALF_BLOCK + Ansi.COLOR_RESET
+            )
         fmt_str.append("\n")
     return "".join(fmt_str)
 
 
-def visualize_last_layer(dim: int, weights: np.ndarray, labels, idx: int, bar_length: int = 18) -> str:
+def visualize_last_layer(
+    dim: int, weights: np.ndarray, labels, idx: int, bar_length: int = 32
+) -> str:
     fmt_str = []
     img = weights[idx].squeeze().numpy()
     min_value = abs(min(img))
@@ -126,7 +152,11 @@ def visualize_last_layer(dim: int, weights: np.ndarray, labels, idx: int, bar_le
             + "]\n"
         )
     fmt_str.append("\n")
-    color = Colors.RED.fg if weights[idx].argmax().item() != labels[idx].numpy().item() else Colors.GREEN.fg
+    color = (
+        Colors.RED.fg
+        if weights[idx].argmax().item() != labels[idx].numpy().item()
+        else Colors.GREEN.fg
+    )
     fmt_str.append(f"pred: {color}{weights[idx].argmax().item()}{Ansi.COLOR_RESET}")
     return "".join(fmt_str)
 
@@ -140,7 +170,9 @@ def visualize_mnist_digit(X, idx: int) -> str:
             bg_value = img[y + 1, x]
             fg_color = GRAYSCALE[int(fg_value / 255 * (len(GRAYSCALE) - 1))].fg
             bg_color = GRAYSCALE[int(bg_value / 255 * (len(GRAYSCALE) - 1))].bg
-            fmt_str.append(fg_color + bg_color + SpecialChars.UPPER_HALF_BLOCK + Ansi.COLOR_RESET)
+            fmt_str.append(
+                fg_color + bg_color + SpecialChars.UPPER_HALF_BLOCK + Ansi.COLOR_RESET
+            )
         fmt_str.append("\n")
     return "".join(fmt_str)
 
