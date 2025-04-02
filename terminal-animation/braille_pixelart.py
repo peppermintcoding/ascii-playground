@@ -53,12 +53,8 @@ def render_braille(img: np.ndarray):
 
 def main(image_path: str):
     image = Image.open(image_path)
-    new_width = image.width
-    new_height = image.height
-    while new_width % 2 != 0:
-        new_width -= 1
-    while new_height % 4 != 0:
-        new_height -= 1
+    new_width = image.width - (image.width % 2)
+    new_height = image.height - (image.height % 4)
     image = image.resize((new_width, new_height))
     binary_img = floyd_steinberg_dither(image=image)
     render_braille(img=binary_img)
