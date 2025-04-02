@@ -32,7 +32,7 @@ def step():
     optim.zero_grad()
     loss = model(X).sparse_categorical_crossentropy(Y).backward()
     optim.step()
-    return loss
+    return loss, X, Y
 
 
 jit_step = TinyJit(step)
@@ -40,31 +40,17 @@ jit_step = TinyJit(step)
 
 def train(steps: int):
     for step in range(steps):
-        loss = jit_step()
+        loss, X, Y = jit_step()
         if step % 100 == 0:
             Tensor.training = False
             acc = (model(X_test).argmax(axis=1) == Y_test).mean().item()
             print(f"step {step:4d}, loss {loss.item():.2f}, acc {acc * 100.0:.2f}%")
 
-
-samples = Tensor.randint(batch_size, high=X_train.shape[0])
-X, Y = X_train[samples], Y_train[samples]
-
-print(
-    f"{12 * SpecialChars.DOUBLE_HORIZONTAL_BAR}-{Y[0].numpy()}-{13 * SpecialChars.DOUBLE_HORIZONTAL_BAR}"
-)
-for y in range(0, X_train.shape[2], 2):
-    img = X[0].squeeze().numpy()
-    for x in range(img.shape[1]):
-        fg_value = img[y, x]
-        bg_value = img[y + 1, x]
-        fg_color = GRAYSCALE[int(fg_value / 255 * (len(GRAYSCALE) - 1))].fg
-        bg_color = GRAYSCALE[int(bg_value / 255 * (len(GRAYSCALE) - 1))].bg
-        print(
-            fg_color + bg_color + SpecialChars.UPPER_HALF_BLOCK + Ansi.COLOR_RESET,
-            end="",
-        )
-    print()
+            visualize_mnist_digit(X=X, Y=Y, idx=0)
+            x_model = model.l1(X.squeeze().flatten(1))
+            visualize_layer(dim=32, weights=x_model, title="layer 01")
+            x_model = model.l2(x=x_model)
+            visualize_layer(dim=16, weights=x_model, title="layer 02")
 
 
 def visualize_layer(dim: int, weights: np.ndarray, title: str):
@@ -86,7 +72,22 @@ def visualize_layer(dim: int, weights: np.ndarray, title: str):
             )
         print()
 
-x_model = model.l1(X.squeeze().flatten(1))
-visualize_layer(dim=32, weights=x_model, title="layer 01")
-x_model = model.l2(x=x_model)
-visualize_layer(dim=16, weights=x_model, title="layer 02")
+
+def visualize_mnist_digit(X, Y, idx: int):
+    print(
+        f"{12 * SpecialChars.DOUBLE_HORIZONTAL_BAR}-{Y[idx].numpy()}-{13 * SpecialChars.DOUBLE_HORIZONTAL_BAR}"
+    )
+    for y in range(0, X_train.shape[2], 2):
+        img = X[idx].squeeze().numpy()
+        for x in range(img.shape[1]):
+            fg_value = img[y, x]
+            bg_value = img[y + 1, x]
+            fg_color = GRAYSCALE[int(fg_value / 255 * (len(GRAYSCALE) - 1))].fg
+            bg_color = GRAYSCALE[int(bg_value / 255 * (len(GRAYSCALE) - 1))].bg
+            print(
+                fg_color + bg_color + SpecialChars.UPPER_HALF_BLOCK + Ansi.COLOR_RESET,
+                end="",
+            )
+        print()
+
+train(steps=1_000)
