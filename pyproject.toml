@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=2.2.3",
+    "rich>=14.0.0",
     "tinygrad>=0.10.2",
     "torch>=2.6.0",
     "transformers>=4.50.3",
