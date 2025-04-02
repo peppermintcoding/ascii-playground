@@ -111,15 +111,20 @@ def visualize_layer(dim: int, weights: np.ndarray, idx: int) -> str:
     return "".join(fmt_str)
 
 
-def visualize_last_layer(dim: int, weights: np.ndarray, labels, idx: int) -> str:
+def visualize_last_layer(dim: int, weights: np.ndarray, labels, idx: int, bar_length: int = 18) -> str:
     fmt_str = []
     img = weights[idx].squeeze().numpy()
     min_value = abs(min(img))
     max_value = max(img) + min_value
     for x in range(dim):
-        fg_value = img[x] + min_value
-        fg_color = GRAYSCALE[int(fg_value / max_value * (len(GRAYSCALE) - 1))].fg
-        fmt_str.append(fg_color + SpecialChars.FULL_BLOCK + Ansi.COLOR_RESET)
+        value = img[x] + min_value
+        bars = int(value / max_value * bar_length)
+        fmt_str.append(
+            f"{Colors.YELLOW.fg}{x}{Ansi.COLOR_RESET}: ["
+            + SpecialChars.DOUBLE_HORIZONTAL_BAR * bars
+            + " " * (bar_length - bars)
+            + "]\n"
+        )
     fmt_str.append("\n")
     color = Colors.RED.fg if weights[idx].argmax().item() != labels[idx].numpy().item() else Colors.GREEN.fg
     fmt_str.append(f"pred: {color}{weights[idx].argmax().item()}{Ansi.COLOR_RESET}")
