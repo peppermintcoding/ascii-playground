@@ -2,7 +2,7 @@ from tinygrad import Tensor, TinyJit, nn
 from tinygrad.nn.datasets import mnist
 import numpy as np
 
-from utils import GRAYSCALE, Ansi, SpecialChars
+from utils import GRAYSCALE, Ansi, SpecialChars, Colors
 
 
 class Model:
@@ -32,7 +32,7 @@ def step():
     optim.zero_grad()
     loss = model(X).sparse_categorical_crossentropy(Y).backward()
     optim.step()
-    return loss, X, Y
+    return loss
 
 
 jit_step = TinyJit(step)
@@ -40,25 +40,30 @@ jit_step = TinyJit(step)
 
 def train(steps: int):
     for step in range(steps):
-        loss, X, Y = jit_step()
+        loss = jit_step()
         if step % 100 == 0:
             Tensor.training = False
             acc = (model(X_test).argmax(axis=1) == Y_test).mean().item()
             print(f"step {step:4d}, loss {loss.item():.2f}, acc {acc * 100.0:.2f}%")
 
-            visualize_mnist_digit(X=X, Y=Y, idx=0)
+            samples = Tensor.randint(batch_size, high=X_test.shape[0])
+            X, Y = X_test[samples], Y_test[samples]
+            idx = 0
+            visualize_mnist_digit(X=X, Y=Y, idx=idx)
             x_model = model.l1(X.squeeze().flatten(1))
-            visualize_layer(dim=32, weights=x_model, title="layer 01")
+            visualize_layer(dim=32, weights=x_model, title="layer 01", idx=idx)
             x_model = model.l2(x=x_model)
-            visualize_layer(dim=16, weights=x_model, title="layer 02")
+            visualize_layer(dim=16, weights=x_model, title="layer 02", idx=idx)
+            x_model = model.l3(x=x_model)
+            visualize_last_layer(dim=10, weights=x_model, labels=Y, title="layer 03", idx=idx)
 
 
-def visualize_layer(dim: int, weights: np.ndarray, title: str):
+def visualize_layer(dim: int, weights: np.ndarray, title: str, idx: int):
     print(
         f"{11 * SpecialChars.DOUBLE_HORIZONTAL_BAR}-{title}-{11 * SpecialChars.DOUBLE_HORIZONTAL_BAR}{Ansi.COLOR_RESET}",
     )
     for y in range(0, dim, 2):
-        img = weights[0].squeeze().numpy()
+        img = weights[idx].squeeze().numpy()
         for x in range(dim):
             min_value = abs(min(img))
             fg_value = img[x + y * dim] + min_value
@@ -71,6 +76,26 @@ def visualize_layer(dim: int, weights: np.ndarray, title: str):
                 end="",
             )
         print()
+
+
+def visualize_last_layer(dim: int, weights: np.ndarray, labels, title: str, idx: int):
+    print(
+        f"{11 * SpecialChars.DOUBLE_HORIZONTAL_BAR}-{title}-{11 * SpecialChars.DOUBLE_HORIZONTAL_BAR}{Ansi.COLOR_RESET}",
+    )
+    for x in range(dim):
+        img = weights[idx].squeeze().numpy()
+        min_value = abs(min(img))
+        fg_value = img[x] + min_value
+        max_value = max(img) + min_value
+        fg_color = GRAYSCALE[int(fg_value / max_value * (len(GRAYSCALE) - 1))].fg
+        print(
+            fg_color + SpecialChars.FULL_BLOCK + Ansi.COLOR_RESET,
+            end="",
+        )
+    print()
+    color = Colors.RED.fg if weights[idx].argmax().item() != labels[idx].numpy().item() else Colors.GREEN.fg
+    print(f"pred: {color}{weights[idx].argmax().item()}{Ansi.COLOR_RESET}")
+
 
 
 def visualize_mnist_digit(X, Y, idx: int):
