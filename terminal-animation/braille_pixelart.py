@@ -89,6 +89,6 @@ if __name__ == "__main__":
     )
     parser.add_argument("-i", type=str, help="path to image", default="img/selena.jpeg")
     parser.add_argument("-c", type=int, help="compression factor", default=4)
-    parser.add_argument("-m", type=str, help="pixelating method, 'floyd' or 'threshold", default="floyd")
+    parser.add_argument("-m", type=str, help="pixelating method, 'floyd' or 'threshold'", default="floyd")
     args = parser.parse_args()
     main(image_path=args.i, compression_factor=args.c, method=args.m)
