@@ -51,10 +51,12 @@ def render_braille(img: np.ndarray):
         print()
 
 
-def main(image_path: str):
+def main(image_path: str, compression_factor: int):
     image = Image.open(image_path)
-    new_width = image.width - (image.width % 2)
-    new_height = image.height - (image.height % 4)
+    new_width = image.width // compression_factor
+    new_width = new_width - (new_width % 2)
+    new_height = image.height // compression_factor
+    new_height = new_height - (new_height % 4)
     image = image.resize((new_width, new_height))
     binary_img = floyd_steinberg_dither(image=image)
     render_braille(img=binary_img)
@@ -66,5 +68,6 @@ if __name__ == "__main__":
         description="uses floyd steinberg dithering on image and prints with braille characters",
     )
     parser.add_argument("-i", type=str, help="path to image", default="img/selena.jpeg")
+    parser.add_argument("-c", type=int, help="compression factor", default=4)
     args = parser.parse_args()
-    main(image_path=args.i)
+    main(image_path=args.i, compression_factor=args.c)
