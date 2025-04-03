@@ -7,7 +7,6 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
 from tinygrad import Tensor, TinyJit, nn
-from tinygrad.nn.datasets import mnist
 
 from utils import GRAYSCALE, Ansi, Colors, SpecialChars
 
@@ -24,14 +23,15 @@ class Model:
         return self.l3(x)
 
 
-X_train, Y_train, X_test, Y_test = mnist()
+X_train, Y_train, X_test, Y_test = nn.datasets.mnist()
 model = Model()
 optim = nn.optim.Adam(nn.state.get_parameters(model))
 batch_size = 128
 console = Console()
 
 
-def step():
+@TinyJit
+def train_step():
     Tensor.training = True
     samples = Tensor.randint(batch_size, high=X_train.shape[0])
     X, Y = X_train[samples], Y_train[samples]
@@ -39,9 +39,6 @@ def step():
     loss = model(X).sparse_categorical_crossentropy(Y).backward()
     optim.step()
     return loss
-
-
-jit_step = TinyJit(step)
 
 
 def visualize(step: int, max_steps: int, acc: float):
@@ -110,7 +107,7 @@ def visualize(step: int, max_steps: int, acc: float):
 def train(steps: int):
     with Live(auto_refresh=True, screen=True, console=console) as live:
         for step in range(steps):
-            _ = jit_step()
+            _ = train_step()
             if step % 5 == 0:
                 Tensor.training = False
                 acc = (model(X_test).argmax(axis=1) == Y_test).mean().item()
@@ -177,4 +174,7 @@ def visualize_mnist_digit(X, idx: int) -> str:
     return "".join(fmt_str)
 
 
-train(steps=1_000)
+try:
+    train(steps=5_000)
+except KeyboardInterrupt:
+    pass
