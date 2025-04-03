@@ -29,6 +29,21 @@ def floyd_steinberg_dither(image: Image):
     return binary_img
 
 
+def thresholding(image: Image, threshold: float):
+    grayscale = image.convert("L")
+    img_array = np.array(grayscale, dtype=np.float32) / 255.0
+    height, width = img_array.shape
+    binary_img = np.zeros((height, width), dtype=np.uint8)
+
+    for y in range(height):
+        for x in range(width):
+            if img_array[y, x] > threshold:
+                binary_img[y, x] = 1
+            else:
+                binary_img[y, x] = 0
+    return binary_img
+
+
 def render_braille(img: np.ndarray):
     unicode_braille_start = 0x2800
     height, width = img.shape
@@ -51,14 +66,19 @@ def render_braille(img: np.ndarray):
         print()
 
 
-def main(image_path: str, compression_factor: int):
+def main(image_path: str, compression_factor: int, method: str = "floyd"):
     image = Image.open(image_path)
     new_width = image.width // compression_factor
     new_width = new_width - (new_width % 2)
     new_height = image.height // compression_factor
     new_height = new_height - (new_height % 4)
     image = image.resize((new_width, new_height))
-    binary_img = floyd_steinberg_dither(image=image)
+    if method == "floyd":
+        binary_img = floyd_steinberg_dither(image=image)
+    elif method == "threshold":
+        binary_img = thresholding(image=image, threshold=0.5)
+    else:
+        raise ValueError(f"invalid method: {method}")
     render_braille(img=binary_img)
 
 
@@ -69,5 +89,6 @@ if __name__ == "__main__":
     )
     parser.add_argument("-i", type=str, help="path to image", default="img/selena.jpeg")
     parser.add_argument("-c", type=int, help="compression factor", default=4)
+    parser.add_argument("-m", type=str, help="pixelating method, 'floyd' or 'threshold", default="floyd")
     args = parser.parse_args()
-    main(image_path=args.i, compression_factor=args.c)
+    main(image_path=args.i, compression_factor=args.c, method=args.m)
