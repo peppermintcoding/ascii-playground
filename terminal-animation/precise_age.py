@@ -1,3 +1,10 @@
+#!/usr/bin/env -S uv run
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "rich"
+# ]
+# ///
 import shutil
 import time
 from datetime import datetime
