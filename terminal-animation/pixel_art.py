@@ -16,9 +16,12 @@ class PixelArtImage:
         self.pixels = pixels
         self.fg_color = fg_color
         self.bg_color = bg_color
+    
 
-    def print(self):
+    def render(self):
+        text = []
         for y in range(0, self.height, 2):
+            line = []
             for x in range(self.width):
                 fg_value = self.pixels[x + y * self.width]
                 bg_value = self.pixels[x + (y + 1) * self.width]
@@ -30,19 +33,25 @@ class PixelArtImage:
                     pixel = SpecialChars.LOWER_HALF_BLOCK
                 else:
                     pixel = " "
-                aprint(self.fg_color + self.bg_color + pixel)
-            aprint(Ansi.COLOR_RESET + "\n")
+                line.append(self.fg_color + self.bg_color + pixel)
+            line.append(Ansi.COLOR_RESET + "\n")
+            text.append("".join(line))
+        return "".join(text)
+
+    def print(self):
+        aprint(self.render())
 
 
-pixels = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 1, 1, 0, 1, 1, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 1, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 1, 1, 1, 1, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0,
-]
-smiley = PixelArtImage(width=9, height=8, pixels=pixels)
-smiley.print()
+if __name__ == "__main__":
+    pixels = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 1, 1, 0, 1, 1, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 1, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 1, 1, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ]
+    smiley = PixelArtImage(width=9, height=8, pixels=pixels)
+    smiley.print()
