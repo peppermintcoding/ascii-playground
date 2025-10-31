@@ -1,15 +1,13 @@
+import shutil
 import time
+from datetime import datetime
 
-import pandas as pd
+from pixel_art import PixelArtImage
 from rich.align import Align
 from rich.console import Console
 from rich.live import Live
-from rich.text import Text
 from rich.panel import Panel
-import shutil
-import numpy as np
-
-from pixel_art import PixelArtImage
+from rich.text import Text
 
 ZERO = [
     0, 0, 0, 0, 0, 0,
@@ -123,6 +121,31 @@ DOT = [
 ]
 
 
+def parse_date(date: str) -> datetime.timestamp:
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(date, fmt)
+        except ValueError:
+            continue
+    raise ValueError("Invalid date format. Use YYYY-MM-DD [HH:MM[:SS]].")
+
+
+def seconds_to_years(seconds: float) -> float:
+    return seconds / (365.25 * 24 * 60 * 60)
+
+
+def reshape(x: list, rows: int, cols: int) -> list:
+    return [x[i * cols:(i + 1) * cols] for i in range(rows)]
+
+
+def hstack(matrices: list):
+    combined = []
+    for row_group in zip(*matrices):
+        row = []
+        for subrow in row_group:
+            row.extend(subrow)
+        combined.append(row)
+    return combined
 
 
 if __name__ == "__main__":
@@ -141,20 +164,20 @@ if __name__ == "__main__":
         ".": DOT,
     }
 
-    print("Enter you date of birth in the format: YYYY-MM-DD HH:MM:SS.")
+    print("Enter your date of birth in the format: YYYY-MM-DD HH:MM:SS.")
     print("The hours, minutes and seconds can be omitted.")
-    birth = pd.Timestamp(input(">> "))
-    now = pd.Timestamp.today()
-    age = (now - birth).total_seconds() / (365.25 * 24 * 60 * 60)
+    birth = parse_date(input(">> "))
+    now = datetime.now()
+    age = seconds_to_years((now - birth).total_seconds())
     width, height = shutil.get_terminal_size()
 
     try:
         with Live(auto_refresh=True, screen=True, console=console) as live:
             while True:
                 digit_text = f"{age:.12f}"
-                big_digit_text = [np.array(big_digits[digit]).reshape(8, 6) for digit in digit_text]
-                big_digit_text = np.hstack(big_digit_text)
-                pixel_art = PixelArtImage(width=6*len(digit_text), height=8, pixels=big_digit_text.flatten().tolist())
+                big_digit_text = [reshape(big_digits[d], 8, 6) for d in digit_text]
+                big_digit_text = hstack(big_digit_text)
+                pixel_art = PixelArtImage(width=6 * len(digit_text), height=8, pixels=[p for row in big_digit_text for p in row])
                 live.update(
                     Panel(
                         Align.center(Text.from_ansi(pixel_art.render()), vertical="middle"),
@@ -165,7 +188,7 @@ if __name__ == "__main__":
                     )
                 )
                 time.sleep(0.1)
-                now = pd.Timestamp.today()
-                age = (now - birth).total_seconds() / (365.25 * 24 * 60 * 60)
+                now = datetime.now()
+                age = seconds_to_years((now - birth).total_seconds())
     except KeyboardInterrupt:
         pass

@@ -38,9 +38,6 @@ class PixelArtImage:
             text.append("".join(line))
         return "".join(text)
 
-    def print(self):
-        aprint(self.render())
-
 
 if __name__ == "__main__":
     pixels = [
@@ -54,4 +51,4 @@ if __name__ == "__main__":
         0, 0, 0, 0, 0, 0, 0, 0, 0,
     ]
     smiley = PixelArtImage(width=9, height=8, pixels=pixels)
-    smiley.print()
+    aprint(smiley.render())
